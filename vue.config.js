@@ -36,7 +36,21 @@ module.exports = {
       warnings: false,
       errors: true,
     },
-    // before: require('./mock/mock-server.js')
+    proxy: {
+      // 这里的 api 表示如果我们的请求地址有 /api 的时候, 就会触发代理机制
+      // localhost:8888/api/abc  => 代理给另一个服务器
+      // 本地的前端  => 本地的后端(vue-cli)  => 代理我们向另一个服务器发请求 （行得通） 后 => 后 不存在跨域
+      // 本地的前端  => 另外一个服务器发请求 （跨域 行不通）前 => 后 存在跨域
+      '/api': {
+        target: 'http://ihrm-java.itheima.net/', // 跨域请求的地址 这里不需要写 /api
+        changeOrigin: true, // 只有这个值为true的情况下 才表示开启跨域
+        // 路径重写
+        // pathRewrite: {
+        //   // 重新路由
+        //   '^/api': '', // 假设我们想把 localhost:8888/api/login 变成 www.baidu.com/login 就需要这么做 去掉 /api
+        // },
+      },
+    },
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
