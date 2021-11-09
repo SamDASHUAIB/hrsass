@@ -168,6 +168,7 @@ export default {
             /* 'user/login' 子模块下的名为 login 的 Action */
             await this.$store.dispatch('user/login', this.loginForm)
             // await 后面都是执行成功后的代码, 前提是在 try/catch 框架内
+            // 跳转主页前, 已经设置好了 token
             this.$router.push('/')
           } catch (error) {
             console.log(error)

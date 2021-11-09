@@ -13,7 +13,16 @@ import store from './store'
 import router from './router'
 
 import '@/icons' // icon
-import '@/permission' // permission <control></control>
+import '@/permission' // permission <control></control> 仅仅是引入 js 文件
+
+// * as 变量 的方式, 将所有已标记导出的整合为一个对象
+import * as directives from '@/directives'
+// 注册自定义指令
+// 遍历所有的导出的指令对象 完成自定义全局注册
+Object.keys(directives).forEach((key) => {
+  // 注册自定义指令
+  Vue.directive(key, directives[key])
+})
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
