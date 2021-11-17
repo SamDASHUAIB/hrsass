@@ -117,3 +117,28 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+/**
+ * 将列表型的数据转化成树形数据
+ * 遍历树形, 需要找到一个 "头" 根
+ * 每次递归, 不同的条件 => 不同的 rootValue
+ * @param {array} list
+ * @param {string} rootValue
+ * @returns {array}
+ */
+export function tranListToTreeData(list, rootValue) {
+  const arr = []
+  list.forEach((item) => {
+    if (item.pid === rootValue) {
+      // 找到之后 就要去找 item 下面有没有子节点
+      const children = tranListToTreeData(list, item.id)
+      if (children.length) {
+        // 如果children的长度大于0 说明找到了子节点
+        // 添加一个 children 属性, 值为找到的子节点组成的数组
+        item.children = children
+      }
+      arr.push(item) // 将内容加入到数组中
+    }
+  })
+  return arr
+}
