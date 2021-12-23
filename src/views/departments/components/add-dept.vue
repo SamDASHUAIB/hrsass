@@ -87,14 +87,15 @@ export default {
       value 就是部门名称
     */
     const checkNameRepeat = async (rule, value, callback) => {
-      // 先要获取最新的组织架构数据
+      // 先要获取最新的组织架构数据(别人可能修改了, 必须拿到最新的进行判断)
       const { depts } = await getDepartments()
+
       let isRepeat = false
       // depts是所有的部门数据
+      // 有 id => 编辑部门业务
       if (this.formData.id) {
-        // 有 id 编辑部门
-        // 数据库中本来就有 "待编辑的数据", 同级部门下, "其他" 的部门名不能和 "待编辑的部门"部门名重复
-        // 找 "其他同级部门" => 共同点 pid 相同, 之后将 "自己" 排除
+        // 数据库中本来就有 "待编辑的数据"(自己), 同级部门下, "其他" 的部门名不能和 "待编辑的部门"(自己) 部门名重复
+        // 找 "其他同级部门" => 所有的 pid 相同的部门(包括了自己), 之后将 "自己" 排除
         isRepeat = depts
           .filter(
             (item) =>
@@ -102,14 +103,23 @@ export default {
           )
           .some((item) => item.name === this.formData.name)
       } else {
-        // 没有 id 新增子部门
+        // 没有 id => 新增子部门业务
         // 找出当前节点的所有子节点 pid(子) === id(父) filter
         // 在所有的子节点中, 查找同名 some
+        /*
+          特殊情况处理
+            最外层添加部门，如果不设置，即 this.treeNode.id 为 undefined 而
+            此时同级的部门 item.pid 为 '' 是一个空字符串
+            undefined === '' 将返回 false，显示不是同级的部门，这显然是错误的，最终 filter 将返回一个 []
+        */
         isRepeat = depts
           .filter((item) => item.pid === this.treeNode.id)
           .some((item) => item.name === value)
       }
-
+      /*
+        有同名: isRepeat 值为 true
+        没有同名: isRepeat 值为 false
+      */
       isRepeat
         ? callback(new Error(`同级部门下已经有了名为${value}的部门了`))
         : callback()
@@ -123,6 +133,7 @@ export default {
       if (this.formData.id) {
         // 编辑部门
         // 排除 "自己" 再看是否有重复的 code
+        // code 可能为空(没写, 可选), 都为空, 不算做重复所以需要加一个 && value
         isRepeat = depts.some(
           (item) => item.id !== this.formData.id && item.code === value && value
         )
@@ -199,6 +210,7 @@ export default {
     },
     // 点击确定时触发
     btnOK() {
+      // 对表单进行整体校验
       this.$refs.formRef.validate(async (isOK) => {
         if (isOK) {
           if (this.formData.id) {
@@ -207,6 +219,7 @@ export default {
           } else {
             // 没有 id 新增部门
             // 添加的是当前节点的子部门, pid(待添加部门) === id(当前节点)
+            // 体现父子关系 pid 一定要设置为当前节点的 id
             await addDepartments({ ...this.formData, pid: this.treeNode.id })
           }
           // 通知父组件, 重新拉取数据
@@ -228,12 +241,13 @@ export default {
         introduce: '',
       }
       // 点击取消, 关闭弹层
+      // this.$emit('closeDialog', false)
       this.$emit('update:showDialog', false)
       // 重置整个表单(仅仅是表单中的数据), 清除之前的校验结果, 并将所有字段重置为初始值
       this.$refs.formRef.resetFields()
     },
+    // 回写数据，父组件中调用此方法, 因为 父组件中有 treeNode 其中有必须的 id 值(同步)
     async getDepartmentDetail(id) {
-      // 回写数据
       this.formData = await getDepartmentDetail(id)
       // props 传值是异步的, 此时的 treeNode 值不一定传过来了, 因此不可取。
       // this.formData = await getDepartmentDetail(this.treeNode.id)

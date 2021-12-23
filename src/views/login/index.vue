@@ -8,7 +8,7 @@
       auto-complete="on"
       label-position="left"
     >
-      <!-- 放置标题图片 @是设置的别名-->
+      <!-- 放置标题图片 @ 是设置的别名-->
       <div class="title-container">
         <h3 class="title">
           <img src="@/assets/common/login-logo.png" alt="" />
@@ -53,7 +53,7 @@
           />
         </span>
       </el-form-item>
-
+      <!-- 登录按钮 -->
       <el-button
         class="loginBtn"
         :loading="loading"
@@ -63,7 +63,7 @@
       >
         登录
       </el-button>
-
+      <!-- 下方的提示文本 -->
       <div class="tips">
         <span style="margin-right: 20px">账号: 13800000002</span>
         <span> 密码: 123456</span>
@@ -87,7 +87,7 @@ export default {
         callback(new Error('...'))
       参数
         rule
-        value
+        value 当前需要校验的值, 往往是用户的输入
         callback
     */
     const validateMobile = (rule, value, callback) => {
@@ -167,14 +167,24 @@ export default {
             this.loading = true
             /* 'user/login' 子模块下的名为 login 的 Action */
             await this.$store.dispatch('user/login', this.loginForm)
-            // await 后面都是执行成功后的代码, 前提是在 try/catch 框架内
+            // await 后面都是执行成功后的代码相当于是在 then 方法中执行
             // 跳转主页前, 已经设置好了 token
             this.$router.push('/')
           } catch (error) {
+            // 打印 axios 响应拦截器中 Promise.reject(error)
             console.log(error)
           } finally {
             this.loading = false
           }
+          // this.$store
+          //   .dispatch('user/login', this.loginForm)
+          //   .then(() => {
+          //     this.$router.push('/')
+          //   })
+          //   .catch((error) => console.log(error))
+          //   .finally(() => {
+          //     this.loading = false
+          //   })
         }
       })
     },

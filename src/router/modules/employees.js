@@ -17,6 +17,14 @@ export default {
         icon: 'people',
       },
     },
+    {
+      path: 'detail/:id', // query传参 动态路由传参 'detail/:id?' 其中问号的含义是 有 id 和没有 id 都可以
+      component: () => import('@/views/employees/detail'),
+      hidden: true, // 不在左侧菜单显示
+      meta: {
+        title: '员工详情', // 标记当前路由规则的中文名称 后续在做左侧菜单时 使用
+      },
+    },
   ],
 }
 

@@ -65,3 +65,15 @@ export function addRole(data) {
     data,
   })
 }
+/**
+ * 为角色分配权限
+ * @param {object} data
+ * @returns Promise
+ */
+export function assignPrem(data) {
+  return request({
+    url: `/sys/role/assignPrem`,
+    method: 'put',
+    data,
+  })
+}

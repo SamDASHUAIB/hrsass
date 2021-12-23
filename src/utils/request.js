@@ -13,7 +13,7 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000,
 }) // 创建一个axios的实例
-// 请求拦截器
+// 请求拦截器, 主要用于处理 token 统一注入
 service.interceptors.request.use(
   // config 请求的配置信息
   (config) => {
@@ -27,15 +27,20 @@ service.interceptors.request.use(
         router.push('/login')
         return Promise.reject(new Error('token 超时'))
       }
+      // token 注入(有效期内的 token)
       config.headers['Authorization'] = `Bearer ${store.getters.token}`
     }
-    // 必须返回 config 否则报错
+    // 必须返回 config 否则报错, 没有 token 什么都不用做
     return config
   },
   (error) => {
     return Promise.reject(error)
   }
 )
+/*
+  响应拦截器
+  处理返回的数据异常
+*/
 service.interceptors.response.use(
   (response) => {
     // 解构 data(我们需要的数据)
@@ -49,14 +54,26 @@ service.interceptors.response.use(
     return data
   },
   (error) => {
+    // 多重解构, 前面的都是模式
+    // const {
+    //   response,
+    //   response: { data },
+    //   response: {
+    //     data: { code },
+    //   },
+    // } = error
     if (
       error.response &&
       error.response.data &&
       error.response.data.code === 10002
+      // response &&
+      // data &&
+      // code
     ) {
-      // 后端响应 状态码 10002 此时表示, token 超时, 登出, 跳转 login 页
+      // 后端响应 状态码 10002 此时表示, token 超时, 删除 token (登出操作)
       store.dispatch('user/logout')
-      router.push('/')
+      // 跳转 登录页
+      router.push('/login')
     }
     Message.error(error.message) // 提示错误信息
     return Promise.reject(error) // 返回执行错误, 让当前的执行链跳出成功, 进入 catch
@@ -67,7 +84,7 @@ service.interceptors.response.use(
  * 判断 token 是否超时
  * @returns {Boolean} true 表示超时
  */
-function IsCheckTimeOut() {
+const IsCheckTimeOut = () => {
   const currentTime = Date.now()
   const timeStamp = getTimeStamp()
   return (currentTime - timeStamp) / 1000 > timeOut

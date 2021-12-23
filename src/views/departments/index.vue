@@ -12,7 +12,8 @@
           :default-expand-all="true"
         >
           <!-- 传入内容 插槽内容 会循环多次 有多少节点 就循环多少次 -->
-          <!-- 作用域插槽 slot-scope={data node} 接收传递给插槽的数据   data 每个节点的数据对象, node 每个节点对象 -->
+          <!-- 作用域插槽, 可以自定义树节点的内容 slot-scope={data node} 接收传递给插槽的数据   data 每个节点的数据对象, node 每个节点对象 -->
+          <!-- element ui 提供的 el-tree.vue 中定义了一个默认的作用域插槽(<slot :data="每个节点的数据对象" :node="每个节点对象"></slot>) -->
           <!-- 监听子组件发射的 delDepts 自定义事件, 重新拉取数据 -->
           <tree-tools
             slot-scope="{ data }"
@@ -26,7 +27,9 @@
     </div>
     <!-- 新增部门的 dialog -->
     <!-- 将当前操作的节点 node 传给子组件 add-dept -->
-    <!--@closeDialog="closeDialog"  -->
+    <!--  :show-dialog.sync 是 @update:show-dialog  -->
+    <!-- .sync "双向 props" v-on + v-bind -->
+    <!-- @closeDialog="closeDialog" -->
     <add-dept
       ref="addDeptRef"
       :show-dialog.sync="showDialog"
@@ -42,6 +45,7 @@ import { getDepartments } from '@/api/departments'
 import { tranListToTreeData } from '@/utils/index'
 import AddDept from './components/add-dept.vue'
 export default {
+  name: 'Department',
   components: {
     TreeTools,
     AddDept,
@@ -50,8 +54,8 @@ export default {
     return {
       company: {},
       defaultProps: {
-        label: 'name',
-        children: 'children',
+        label: 'name', // 树形控件显示的文本要去找哪一个属性
+        children: 'children', // 树形控件, 要去哪一个属性找子节点
       },
       departs: [],
       showDialog: false, // 显示 dialog
@@ -65,15 +69,18 @@ export default {
   methods: {
     async getDepartments() {
       this.loading = true
+      // 这里可以 try catch 处理 Promise.reject(error)。
       const res = await getDepartments()
-      this.company = { name: res.companyName, manager: '负责人', id: '' } // id 设为 "" 而不是 undefined, 否则后续校检出错。
+      // id 设为 "" 而不是 undefined, 否则后续校检出错。
+      // 在最外层(根级)添加子部门，需要手动将 id 设为 '' 否则 id 值为 undefined。
+      this.company = { name: res.companyName, manager: '负责人', id: '' }
       // depts 需要转化为树形结构, array => tree(带 children)
       this.departs = tranListToTreeData(res.depts, '')
       this.loading = false
     },
     // 监听 tree-tools 组件触发的点击添加子部门的事件
     async addDepts(department) {
-      // 显示 dialog
+      // 显示 dialog, 添加了 .sync 事件修饰符
       this.showDialog = true
       this.node = department
     },

@@ -1,5 +1,6 @@
 import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
+import { resetRouter } from '@/router/index'
 /*
   为啥 userInfo 不能设置为null?
     const userInfo = {}
@@ -13,21 +14,25 @@ import { login, getUserInfo, getUserDetailById } from '@/api/user'
 */
 const state = {
   token: getToken(), // 设置 token 为共享状态, 初始化 vuex 先从缓存中取 token
-  userInfo: {}, // 这里定义成空对象, 不能定义成 null
+  userInfo: {}, // 这里定义成空对象, 不能定义成 null, 凡是对象, 给 {} 不要给 null
 }
 const mutations = {
   SET_TOKEN(state, token) {
     state.token = token // 将收到的数据设置给 vuex
-    // 将数据保存到 本地缓存, 与 vuex 同步
+    // 将数据保存到 Cookie, 与 vuex 同步
     setToken(token)
   },
+  // token 失效处理, vuex Cookie 中均需处理。
   REMOVE_TOKEN(state) {
     state.token = null // vuex 置空
     removeToken() // 缓存置空
   },
   SET_USER_INFO(state, userInfo) {
-    state.userInfo = userInfo
+    state.userInfo = userInfo // 响应式
+    // state.userInfo['username'] = userInfo 不是响应式, 追加属性, 需要使用 Vue.set() 或者 this.$set()
+    // state.userInfo = { ...userInfo } // 浅拷贝, 响应式
   },
+  // 退出登录，需要删除用户信息。
   REMOVE_USER_INFO(state) {
     state.userInfo = {}
   },
@@ -70,6 +75,16 @@ const actions = {
     // mutations 中的都是同步代码
     context.commit('REMOVE_TOKEN')
     context.commit('REMOVE_USER_INFO')
+    // 重置路由
+    resetRouter()
+    // 设置 permission 模块下的路由为初始状态(只有静态路由)
+    /*
+      如何实现在 user 子模块中调用 permission 子模块的 mutations ?
+        namespaced: false 没有加锁, 自由访问
+        namespaced: true 加锁后, context 不是全局, 只是 user 模块本身的
+    */
+    //  第三个参数, {root: true} 调用根级别的 mutations 或 actions
+    context.commit('permission/SET_ROUTES', [], { root: true })
   },
 }
 export default {

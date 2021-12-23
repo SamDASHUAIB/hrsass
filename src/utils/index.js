@@ -123,21 +123,39 @@ export function param2Obj(url) {
  * 遍历树形, 需要找到一个 "头" 根
  * 每次递归, 不同的条件 => 不同的 rootValue
  * @param {array} list
- * @param {string} rootValue
+ * @param {string} rootValue 根的特征值
  * @returns {array}
  */
-export function tranListToTreeData(list, rootValue) {
+// export function tranListToTreeData(list, rootValue) {
+//   const arr = []
+//   list.forEach((item) => {
+//     // 找到一个父节点
+//     if (item.pid === rootValue) {
+//       // 找到之后 就要去找 item 下面有没有子节点
+//       const children = tranListToTreeData(list, item.id)
+//       if (children.length) {
+//         // 如果children的长度大于0 说明找到了子节点
+//         // 添加一个 children 属性, 值为找到的子节点组成的数组
+//         item.children = children
+//       }
+//       arr.push(item) // 将找到的父节点加入到数组(最外层)中
+//     }
+//   })
+//   return arr
+// }
+export const tranListToTreeData = (list, rootValue) => {
   const arr = []
   list.forEach((item) => {
+    // 找到一个父节点
     if (item.pid === rootValue) {
-      // 找到之后 就要去找 item 下面有没有子节点
+      // 递归找子节点
       const children = tranListToTreeData(list, item.id)
       if (children.length) {
-        // 如果children的长度大于0 说明找到了子节点
-        // 添加一个 children 属性, 值为找到的子节点组成的数组
+        // 将 children 数组添加到 父节点
         item.children = children
       }
-      arr.push(item) // 将内容加入到数组中
+      // 将整理好的 父节点 添加到数组中
+      arr.push(item)
     }
   })
   return arr

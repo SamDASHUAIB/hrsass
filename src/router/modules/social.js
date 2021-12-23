@@ -4,7 +4,7 @@ import Layout from '@/layout'
 // 每个子模块 其实 都是外层是layout  组件位于layout的二级路由里面
 export default {
   path: '/social', // 路径
-  name: 'social', // 给模块的一级路由加一个 name 属性, 后续做权限时会用到
+  name: 'social_securitys', // 给模块的一级路由加一个 name 属性, 后续做权限时会用到
   component: Layout, // 一级路由组件 布局
   // 配置二级路的路由表
   children: [

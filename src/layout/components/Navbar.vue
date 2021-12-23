@@ -15,6 +15,7 @@
     <!-- 右侧下拉菜单 -->
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
+        <!-- 头像 -->
         <div class="avatar-wrapper">
           <img v-imagerror="defaultImg" :src="staffPhoto" class="user-avatar" />
           <span class="name">{{ userName }}</span>
@@ -48,6 +49,7 @@ export default {
   },
   data() {
     return {
+      // 默认图片地址
       defaultImg: require('@/assets/common/head.jpg'),
     }
   },

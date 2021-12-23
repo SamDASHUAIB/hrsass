@@ -55,9 +55,10 @@ export const constantRoutes = [
 
   {
     path: '/',
-    component: Layout, // 布局
+    component: Layout, // 布局, 一级路由作为布局
     redirect: '/dashboard',
     children: [
+      // 真正的 内容区 作为二级路由
       {
         path: 'dashboard',
         name: 'Dashboard',
@@ -66,9 +67,20 @@ export const constantRoutes = [
       },
     ],
   },
-
+  {
+    path: '/import',
+    component: Layout,
+    hidden: true, // 不显示在左侧菜单中
+    children: [
+      {
+        path: '', // 二级路由path什么都不写 表示二级默认路由
+        component: () => import('@/views/import'),
+      },
+    ],
+  },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true },
+  // [...静态, ...动态] 之后, 404 不能再兜底啦(放在静态最后面, 只能兜底静态)
+  // { path: '*', redirect: '/404', hidden: true },
 ]
 /**
  * 动态路由
@@ -88,15 +100,16 @@ const createRouter = () =>
   new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
-    // 暂时合并, 静态路由 和动态路由, 方便开发
-    routes: [...constantRoutes, ...asyncRoutes],
+    // 动态路由需要权限, 所以, 需要据权限动态添加
+    routes: [...constantRoutes],
   })
 
 const router = createRouter() // 实例化路由
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+// 重置路由
 export function resetRouter() {
   const newRouter = createRouter()
+  // 干掉旧的(静态路由 + 动态路由) => 新(只有静态路由)
   router.matcher = newRouter.matcher // reset router
 }
 

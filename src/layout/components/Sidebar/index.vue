@@ -12,6 +12,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
+        <!-- 遍历路由表得到左侧菜单项 -->
         <sidebar-item
           v-for="route in routes"
           :key="route.path"
@@ -32,10 +33,12 @@ import variables from '@/styles/variables.scss'
 export default {
   components: { SidebarItem, Logo },
   computed: {
-    ...mapGetters(['sidebar']),
-    routes() {
-      return this.$router.options.routes
-    },
+    ...mapGetters(['sidebar', 'routes']),
+    // 获取当前的路由表
+    // permission => addRoutes => 这里不会响应式的进行变化, 拿的还是原来的数据(只有静态路由)
+    // routes() {
+    //   return this.$router.options.routes
+    // },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
