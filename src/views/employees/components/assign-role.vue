@@ -1,8 +1,14 @@
 <template>
   <el-dialog title="分配角色" :visible="showRoleDialog" @close="btnCancel">
     <!-- el-checkbox-group选中的是 当前用户所拥有的角色  需要绑定 当前用户拥有的角色-->
-    <!-- el-checkbox 的 label 属性值是 checkList 中对应的值(有选中, 没有就不选中)  -->
-    <!-- el-checkbox 如果没有标签体, 那么 label 属性也充当 checkbox 按钮后的介绍(框框后面的文本) -->
+    <!-- el-checkbox-group 中 v-model 收集每一项 el-checkbox 中的 label 值  -->
+    <!--
+    el-checkbox
+      如果没有标签体,
+      那么 label 属性也充当 checkbox 按钮后的介绍(框框后面的文本)
+      有标签体
+      标签体即是介绍文本
+    -->
     <!-- 我们的需要: 存的的 id(label 指定)显示的是 name(标签体 指定) -->
     <el-checkbox-group v-model="checkedList">
       <el-checkbox v-for="item in list" :key="item.id" :label="item.id">
@@ -63,6 +69,7 @@ export default {
       this.checkedList = roleIds
     },
     // this.userId 是 props 传值, 异步, 不一定有值, 不能使用
+    // getUserDetailById 自己调用的话，created 等生命周期函数中调用
     // async getUserDetailById() {
     //   const { roleIds } = await getUserDetailById(this.userId)
     //   this.checkedList = roleIds

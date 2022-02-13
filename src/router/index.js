@@ -9,6 +9,7 @@ import attendancesRouter from './modules/attendances'
 import salarysRouter from './modules/salarys'
 import settingRouter from './modules/setting'
 import socialRouter from './modules/social'
+import userRouter from './modules/user'
 
 Vue.use(Router)
 
@@ -55,7 +56,7 @@ export const constantRoutes = [
 
   {
     path: '/',
-    component: Layout, // 布局, 一级路由作为布局
+    component: Layout, // 布局, 一级路由作为布局。
     redirect: '/dashboard',
     children: [
       // 真正的 内容区 作为二级路由
@@ -78,6 +79,7 @@ export const constantRoutes = [
       },
     ],
   },
+  userRouter,
   // 404 page must be placed at the end !!!
   // [...静态, ...动态] 之后, 404 不能再兜底啦(放在静态最后面, 只能兜底静态)
   // { path: '*', redirect: '/404', hidden: true },

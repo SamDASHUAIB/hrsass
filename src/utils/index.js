@@ -151,7 +151,7 @@ export const tranListToTreeData = (list, rootValue) => {
       // 递归找子节点
       const children = tranListToTreeData(list, item.id)
       if (children.length) {
-        // 将 children 数组添加到 父节点
+        // 将 children 属性挂载到 父节点上
         item.children = children
       }
       // 将整理好的 父节点 添加到数组中

@@ -42,12 +42,13 @@ module.exports = {
       // 本地的前端  => 本地的后端(vue-cli)  => 代理我们向另一个服务器发请求 （行得通） 后 => 后 不存在跨域
       // 本地的前端  => 另外一个服务器发请求 （跨域 行不通）前 => 后 存在跨域
       '/api': {
+        // localhost:8888/api/login -> http://ihrm-java.itheima.net/api/login
         target: 'http://ihrm-java.itheima.net/', // 跨域请求的地址 这里不需要写 /api
         changeOrigin: true, // 只有这个值为true的情况下 才表示开启跨域
         // 路径重写
         // pathRewrite: {
         //   // 重新路由
-        //   '^/api': '', // 假设我们想把 localhost:8888/api/login 变成 www.baidu.com/login 就需要这么做 去掉 /api
+        //   '^/api': '', // 假设我们想把 localhost:8888/api/login 变成 http://ihrm-java.itheima.net/login 就需要这么做 去掉 /api
         // },
       },
     },

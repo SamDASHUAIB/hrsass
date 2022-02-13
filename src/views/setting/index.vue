@@ -35,7 +35,8 @@
               <el-table-column align="center" label="描述" prop="description" />
               <el-table-column align="center" label="操作">
                 <!-- 默认插槽 + 作用域插槽 自定义列的内容, row 当前单元格数据  -->
-                <template slot="default" slot-scope="{ row }">
+                <!-- slot="default" slot-scope="{ row }" -->
+                <template v-slot="{ row }">
                   <el-button
                     size="small"
                     type="success"
@@ -58,24 +59,6 @@
                     删除
                   </el-button>
                 </template>
-                <!-- 新写法 v-slot:default="{row}" -->
-                <!-- <template v-slot:default="{ row }">
-                  <el-button size="small" type="success">分配权限</el-button>
-                  <el-button
-                    size="small"
-                    type="primary"
-                    @click="editRole(row.id)"
-                  >
-                    编辑
-                  </el-button>
-                  <el-button
-                    size="small"
-                    type="danger"
-                    @click="delRole(row.id)"
-                  >
-                    删除
-                  </el-button>
-                </template> -->
               </el-table-column>
             </el-table>
             <!-- 分页组件 -->
@@ -165,7 +148,8 @@
       <!-- 底部 -->
       <el-row slot="footer" type="flex" justify="center">
         <el-col :span="6">
-          <el-button size="small" @click="btnCancel">取消</el-button>
+          <!-- btnCancel -->
+          <el-button size="small" @click="showDialog = false">取消</el-button>
           <el-button size="small" type="primary" @click="btnOK">确定</el-button>
         </el-col>
       </el-row>
@@ -179,16 +163,15 @@
       <!-- 权限是一颗树 -->
       <!--
         check-strictly 如果为true 那表示父子勾选时  不互相关联 如果为false就互相关联
-
         false => 子节点 选中 父节点也必定选中
       -->
       <!-- id作为唯一标识 -->
       <!--
         default-checked-keys 默认选中的项
-        注意!!! 这里用了 :default-checked-keys 没有双向绑定, 只有单向数据流 props 的特性
+        注意!!! 这里用了 :default-checked-keys 没有双向绑定, 只有单向数据流 props 的特性，el-tree 作为 子组件，不能直接修改 props
         show-checkbox 可选择节点
         node-key 每个树节点的唯一值(不能重复) 通常就是 id 值
-          el-tree 有一个 getCheckedKeys() 方法, 可以获取到所有选中节点的 node-key 值。返回值是一个 数组
+          el-tree 有一个 getCheckedKeys() 方法, 可以获取到所有选中节点的 node-key 值。返回值是一个 数组，通过 $refs 调用这个方法。
        -->
       <el-tree
         ref="permTree"
@@ -364,6 +347,7 @@ export default {
       this.showPermDialog = false
     },
     btnPermCancel() {
+      this.permData = []
       this.selectCheck = [] // 清空, 防累计
       this.showPermDialog = false
     },

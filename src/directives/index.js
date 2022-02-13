@@ -13,7 +13,6 @@ export const imagerror = {
     dom.onerror = function () {
       // 当图片出现异常的时候 会将指令配置的默认图片设置为该图片的内容
       // dom可以注册error事件
-      //
       /*
         <img v-imagerror="默认图片地址">
         options.value 就是默认图片地址

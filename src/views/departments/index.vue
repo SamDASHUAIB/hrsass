@@ -1,8 +1,8 @@
 <template>
   <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
-      <!-- 组织架构--头部 -->
       <el-card class="tree-card">
+        <!-- 组织架构--头部 -->
         <tree-tools :tree-node="company" :is-root="true" @addDepts="addDepts" />
         <!-- 树形控件 -->
         <!-- data 属性 数据源 props 配置对象 -->
@@ -27,7 +27,7 @@
     </div>
     <!-- 新增部门的 dialog -->
     <!-- 将当前操作的节点 node 传给子组件 add-dept -->
-    <!--  :show-dialog.sync 是 @update:show-dialog  -->
+    <!--  :show-dialog.sync 是 :show-dialog + @update:show-dialog  -->
     <!-- .sync "双向 props" v-on + v-bind -->
     <!-- @closeDialog="closeDialog" -->
     <add-dept
@@ -55,7 +55,7 @@ export default {
       company: {},
       defaultProps: {
         label: 'name', // 树形控件显示的文本要去找哪一个属性
-        children: 'children', // 树形控件, 要去哪一个属性找子节点
+        children: 'children', // 树形控件, 要去哪一个属性找子节点。
       },
       departs: [],
       showDialog: false, // 显示 dialog

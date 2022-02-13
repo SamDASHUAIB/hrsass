@@ -20,7 +20,7 @@ service.interceptors.request.use(
     // Do something before request is sent
     // 注入 token
     if (store.getters.token) {
-      // 有 token, 同时还需检查此 token 是否过期
+      // token 失效的主动介入, 使用时间戳。
       if (IsCheckTimeOut()) {
         // 超时, 执行登出操作, 跳转登录页
         store.dispatch('user/logout')
@@ -47,7 +47,7 @@ service.interceptors.response.use(
     // 注意 axios 默认添加的一层 data
     const { data, success, message } = response.data
     if (!success) {
-      Message.error(message) // 提示错误信息
+      Message.error(message) // 提示错误信息，提示错误信息
       return Promise.reject(new Error(message))
     }
     // 成功, 返回请求的数据

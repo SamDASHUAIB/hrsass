@@ -3,6 +3,7 @@
   登录权限 token 控制
     登录(有 token)才能可访问页面
     无需登录即可访问的页面 白名单中的页面无需 token 即可访问
+  路由访问权限 routes (静态路由 + 有权限的动态路由 + 404页)
 */
 import router from '@/router'
 import store from '@/store' // 此处的 store 和 组件中的 this.$store 一样
@@ -69,7 +70,11 @@ router.beforeEach(async (to, from, next) => {
       // return NProgress.done()
     }
     // 有 token 那么还需要 userInfo 获取用户资料, 渲染页面使用
-    // 获取用户资料, 只需要一次, 重复获取, 浪费带宽
+    /*
+      有 userId 已经获取过用户资料了, 不是第一次访问主页了
+      获取用户资料, 只需要一次, 在第一次访问主页的时候，获取
+      重复获取, 浪费带宽, 登录后, 在页面内部各种跳转时, 无需再次获取用户资料。
+    */
     if (!store.getters.userId) {
       try {
         const {

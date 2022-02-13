@@ -3,9 +3,7 @@
     <div class="app-container">
       <!-- 靠右的按钮 -->
       <page-tools>
-        <!-- <el-button slot="after" type="primary" icon="el-icon-edit" size="small">
-          添加菜单
-        </el-button> -->
+        <!-- 顶层的按钮可添加一级权限，特征是 type = 1 pid = '0' -->
         <template v-slot:after>
           <el-button
             type="primary"
@@ -18,6 +16,13 @@
         </template>
       </page-tools>
       <!-- 表格 -->
+      <!--
+        树形结构 -> 含有 children 属性
+        必须设置 row-key 优化行数据的渲染，树形结构必备唯一值。
+        tree-props
+          children 设置去哪个属性找子节点
+          hasChildren 那些行有子节点（需要展开）
+       -->
       <el-table
         border
         :data="list"
@@ -30,8 +35,8 @@
         <el-table-column align="center" label="操作">
           <!-- slot-scope="{ row }" -->
           <template v-slot="{ row }">
-            <!-- 添加按钮, 只有 type===1 的时候才显示(页面访问全, 第一级权限) -->
-
+            <!-- 添加按钮, 只有 type===1 的时候才显示(页面访问权, 第一级权限) -->
+            <!-- 要添加的是二级权限（按钮操作权）type===2 -->
             <el-button
               v-if="row.type === 1"
               type="text"
@@ -49,8 +54,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- 新增编辑弹层 -->
-    <!-- 放置一个弹层 用来编辑新增节点 -->
+    <!-- 新增OR编辑弹层 -->
     <el-dialog
       :title="`${showText}权限点`"
       :visible="showDialog"
@@ -73,6 +77,7 @@
           <el-input v-model="formData.description" style="width: 90%" />
         </el-form-item>
         <el-form-item label="开启">
+          <!-- 显示的是 text 收集的是 value -->
           <el-switch
             v-model="formData.enVisible"
             active-value="1"
@@ -145,9 +150,10 @@ export default {
         (err) => err
       )
       if (confirmRes !== 'confirm') return this.$message.info('已取消删除操作!')
-      // 确定删除
+      // 确定删除。
       try {
         await delPermission(id)
+        // 重新拉取 tree 形数据
         this.getPermissionList()
         this.$message.success('删除成功!')
       } catch (error) {
@@ -156,15 +162,15 @@ export default {
     },
     addPermission(type, pid) {
       this.showDialog = true
-      // 访问权 type=1 一级权限, 按钮操作权 type = 2 二级权限
+      // 页面访问权 type=1 一级权限, 按钮操作权 type = 2 二级权限
       // 一级权限下添加二级权限传入其 id 值作为二级权限的 pid, id(一级) === pid(二级)
-      // 添加一级权限 pid === ''
+      // 一级权限的特征 pid === ''
       // 这些值, 不是通过表单收集的, 但是最终都需要发送给服务器
       this.formData.type = type
       this.formData.pid = pid
     },
     async editPermission(id) {
-      // 回写数据
+      // 回写数据, 编辑往往需要回写数据。
       this.formData = await getPermissionDetail(id)
       this.showDialog = true
     },

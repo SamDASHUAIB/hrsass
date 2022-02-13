@@ -1,5 +1,9 @@
 <template>
   <div class="login-container">
+    <!--
+      model
+      rules
+     -->
     <el-form
       ref="loginForm"
       :model="loginForm"

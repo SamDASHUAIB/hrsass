@@ -109,8 +109,8 @@ export default {
         /*
           特殊情况处理
             最外层添加部门，如果不设置，即 this.treeNode.id 为 undefined 而
-            此时同级的部门 item.pid 为 '' 是一个空字符串
-            undefined === '' 将返回 false，显示不是同级的部门，这显然是错误的，最终 filter 将返回一个 []
+            此时其他同级的部门 item.pid 为 '' 是一个空字符串
+            undefined === ''(其他根部门) 将返回 false，显示不是同级的部门，这显然是错误的，最终 filter 将返回一个 []
         */
         isRepeat = depts
           .filter((item) => item.pid === this.treeNode.id)
